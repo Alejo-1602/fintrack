@@ -101,9 +101,9 @@ a:hover {
 }
 
 .brand-logo-img {
-  height: 44px;
+  height: 68px;
   width: auto;
-  max-width: 190px;
+  max-width: 280px;
   object-fit: contain;
   display: block;
 }
