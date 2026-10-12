@@ -222,14 +222,15 @@ Sigue este checklist secuencial para dejar la aplicación 100% pública:
 ---
 
 ### Checklist D: Generar el Código QR de Acceso Móvil
-Una vez obtenida la URL pública de Render, genera el código QR para que cualquier persona pueda escanearlo con la cámara del celular y usar la app:
+Tu aplicación ya se encuentra desplegada y accesible públicamente en la nube en:
+👉 **https://fintrack-m7hs.onrender.com**
 
-Ejecuta el script incluido:
-```bash
-python generar_qr.py https://fintrack-app.onrender.com
-```
-
-El script creará automáticamente el archivo de imagen:
+El código QR ya fue generado en la raíz del proyecto como:
 **`fintrack_qr.png`**
+
+Si deseas regenerarlo en cualquier momento, ejecuta:
+```bash
+python generar_qr.py https://fintrack-m7hs.onrender.com
+```
 
 ¡Listo! Comparte o imprime esa imagen para que cualquier evaluador o usuario pueda acceder a FinTrack desde su dispositivo móvil al instante.
