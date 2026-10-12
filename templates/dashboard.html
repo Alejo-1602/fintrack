@@ -12,12 +12,9 @@
       Bienvenido, <strong>{{ session.get('usuario_nombre') }}</strong>. Aquí está el estado de tus finanzas.
     </p>
   </div>
-  <div style="display: flex; gap: 0.75rem;">
-    <a href="{{ url_for('exportar_datos') }}" class="btn btn-secondary btn-sm" title="Descargar respaldo en formato JSON">
-      📥 Respaldar (JSON)
-    </a>
+  <div>
     <a href="{{ url_for('agregar_movimiento') }}" class="btn btn-primary">
-      ➕ Registrar Movimiento
+      + Registrar Movimiento
     </a>
   </div>
 </div>
@@ -30,7 +27,6 @@
   <div class="stat-card stat-card-balance">
     <div class="stat-header">
       <span class="stat-title">Saldo Actual Global</span>
-      <div class="stat-icon stat-icon-blue">🏦</div>
     </div>
     <div class="stat-value" style="color: {% if saldo_actual >= 0 %}#2563eb{% else %}var(--color-gasto){% endif %};">
       ${{ "{:,.2f}".format(saldo_actual) }}
@@ -42,7 +38,6 @@
   <div class="stat-card stat-card-ingreso">
     <div class="stat-header">
       <span class="stat-title">Ingresos ({% if mes_filtro %}{{ mes_filtro }}{% else %}Mes Seleccionado{% endif %})</span>
-      <div class="stat-icon stat-icon-green">📈</div>
     </div>
     <div class="stat-value value-ingreso">
       +${{ "{:,.2f}".format(total_ingresos_mes) }}
@@ -54,7 +49,6 @@
   <div class="stat-card stat-card-gasto">
     <div class="stat-header">
       <span class="stat-title">Gastos ({% if mes_filtro %}{{ mes_filtro }}{% else %}Mes Seleccionado{% endif %})</span>
-      <div class="stat-icon stat-icon-red">📉</div>
     </div>
     <div class="stat-value value-gasto">
       -${{ "{:,.2f}".format(total_gastos_mes) }}
@@ -66,7 +60,6 @@
   <div class="stat-card stat-card-mes">
     <div class="stat-header">
       <span class="stat-title">Balance Mensual</span>
-      <div class="stat-icon stat-icon-purple">⚖️</div>
     </div>
     <div class="stat-value" style="color: {% if balance_mes >= 0 %}var(--color-ingreso){% else %}var(--color-gasto){% endif %};">
       {% if balance_mes >= 0 %}+{% endif %}${{ "{:,.2f}".format(balance_mes) }}
@@ -139,7 +132,7 @@
     <!-- Botones de Acción de Filtro -->
     <div style="display: flex; gap: 0.5rem;">
       <button type="submit" class="btn btn-primary" title="Aplicar filtros">
-        Filtrar 🔍
+        Filtrar
       </button>
       {% if busqueda_query or tipo_filtro or categoria_filtro or mes_filtro %}
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" title="Limpiar todos los filtros">
@@ -192,9 +185,9 @@
               </td>
               <td>
                 {% if mov.tipo == 'ingreso' %}
-                  <span class="badge badge-ingreso">↑ Ingreso</span>
+                  <span class="badge badge-ingreso">Ingreso</span>
                 {% else %}
-                  <span class="badge badge-gasto">↓ Gasto</span>
+                  <span class="badge badge-gasto">Gasto</span>
                 {% endif %}
               </td>
               <td>
@@ -209,11 +202,11 @@
               <td style="text-align: center;">
                 <div class="actions-cell" style="justify-content: center;">
                   <a href="{{ url_for('editar_movimiento', id=mov._id|string) }}" class="btn btn-secondary btn-sm" title="Editar movimiento">
-                    ✏️ Editar
+                    Editar
                   </a>
                   <form action="{{ url_for('eliminar_movimiento', id=mov._id|string) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este movimiento? Esta acción no se puede deshacer.');">
                     <button type="submit" class="btn btn-danger btn-sm" title="Eliminar movimiento">
-                      🗑️ Borrar
+                      Eliminar
                     </button>
                   </form>
                 </div>
@@ -225,7 +218,6 @@
     </div>
   {% else %}
     <div class="empty-state">
-      <div class="empty-state-icon">📋</div>
       <h3 class="empty-state-title">No hay movimientos registrados</h3>
       <p class="empty-state-text">
         {% if busqueda_query or tipo_filtro or categoria_filtro or mes_filtro %}

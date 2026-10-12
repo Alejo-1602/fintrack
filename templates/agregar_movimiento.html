@@ -24,14 +24,14 @@
         <label class="tipo-option">
           <input type="radio" name="tipo" value="ingreso" id="radioIngreso" checked onchange="actualizarCategorias()">
           <span class="tipo-label-btn label-ingreso">
-            <span>📈</span> Ingreso
+            Ingreso
           </span>
         </label>
 
         <label class="tipo-option">
           <input type="radio" name="tipo" value="gasto" id="radioGasto" onchange="actualizarCategorias()">
           <span class="tipo-label-btn label-gasto">
-            <span>📉</span> Gasto
+            Gasto
           </span>
         </label>
       </div>
@@ -90,7 +90,7 @@
       <!-- Botones de Acción -->
       <div style="display: flex; gap: 1rem; margin-top: 2rem;">
         <button type="submit" class="btn btn-primary" style="flex: 2;">
-          💾 Guardar Movimiento
+          Guardar Movimiento
         </button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" style="flex: 1;">
           Cancelar
@@ -105,19 +105,19 @@
 <script>
   // Categorías según requerimientos oficiales del proyecto
   const categoriasIngreso = [
-    { valor: 'salario', texto: '💼 Salario' },
-    { valor: 'beca', texto: '🎓 Beca' },
-    { valor: 'regalo', texto: '🎁 Regalo' },
-    { valor: 'otros', texto: '📦 Otros ingresos' }
+    { valor: 'salario', texto: 'Salario' },
+    { valor: 'beca', texto: 'Beca' },
+    { valor: 'regalo', texto: 'Regalo' },
+    { valor: 'otros', texto: 'Otros ingresos' }
   ];
 
   const categoriasGasto = [
-    { valor: 'comida', texto: '🍔 Comida' },
-    { valor: 'transporte', texto: '🚌 Transporte' },
-    { valor: 'estudio', texto: '📚 Estudio' },
-    { valor: 'ocio', texto: '🎬 Ocio' },
-    { valor: 'servicios', texto: '💡 Servicios' },
-    { valor: 'otros', texto: '📦 Otros gastos' }
+    { valor: 'comida', texto: 'Comida' },
+    { valor: 'transporte', texto: 'Transporte' },
+    { valor: 'estudio', texto: 'Estudio' },
+    { valor: 'ocio', texto: 'Ocio' },
+    { valor: 'servicios', texto: 'Servicios' },
+    { valor: 'otros', texto: 'Otros gastos' }
   ];
 
   function actualizarCategorias(categoriaSeleccionada = null) {

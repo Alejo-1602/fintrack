@@ -19,8 +19,7 @@
   <header class="navbar">
     <div class="navbar-container">
       <a href="{{ url_for('dashboard') }}" class="brand-link">
-        <span class="brand-logo-icon">💰</span>
-        <span>FinTrack</span>
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FinTrack - Tu billetera aliada" class="brand-logo-img">
       </a>
 
       <nav class="nav-links">
@@ -30,7 +29,7 @@
             <span>{{ session.get('usuario_nombre') }}</span>
           </div>
           <a href="{{ url_for('agregar_movimiento') }}" class="btn btn-primary btn-sm">+ Nuevo Movimiento</a>
-          <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" title="Cerrar sesión">Salir 🚪</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" title="Cerrar sesión">Cerrar Sesión</a>
         {% else %}
           <a href="{{ url_for('login') }}" class="btn btn-secondary btn-sm">Iniciar Sesión</a>
           <a href="{{ url_for('registro') }}" class="btn btn-primary btn-sm">Registrarse</a>
@@ -61,8 +60,12 @@
   <!-- Pie de página -->
   <footer class="footer">
     <div class="footer-content">
-      <p><strong>FinTrack</strong> &copy; 2026 - Sistema de Control de Gastos Personales</p>
-      <p>Proyecto para Sistemas Transaccionales | MongoDB Atlas + Flask</p>
+      <p><strong>FinTrack</strong> &copy; 2026 - Tu billetera aliada</p>
+      <p>Proyecto para Sistemas Transaccionales | MongoDB Atlas + Flask
+        {% if session.get('usuario_id') %}
+          &bull; <a href="{{ url_for('exportar_datos') }}" style="color: var(--color-slate-600); text-decoration: underline;">Descargar respaldo de datos (JSON)</a>
+        {% endif %}
+      </p>
     </div>
   </footer>
 
