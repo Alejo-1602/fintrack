@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Cuenta - FinTrack{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div style="text-align: center; margin-bottom: 1.75rem;">
+      <div class="brand-logo-icon" style="margin: 0 auto 0.75rem auto; width: 48px; height: 48px; font-size: 1.5rem;">
+        📝
+      </div>
+      <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--color-dark); margin-bottom: 0.35rem;">
+        Crea tu Cuenta
+      </h1>
+      <p style="color: var(--color-slate-600); font-size: 0.9rem;">
+        Comienza a tener el control total de tus ingresos y gastos
+      </p>
+    </div>
+
+    <!-- Formulario de registro de usuario -->
+    <form action="{{ url_for('registro') }}" method="POST">
+      <div class="form-group">
+        <label for="nombre" class="form-label">Nombre Completo</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          name="nombre" 
+          class="form-input" 
+          placeholder="Ej: Alejandro Gonzalez" 
+          required 
+          autofocus
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="correo" class="form-label">Correo Electrónico</label>
+        <input 
+          type="email" 
+          id="correo" 
+          name="correo" 
+          class="form-input" 
+          placeholder="nombre@ejemplo.com" 
+          required
+        >
+        <div class="form-hint">Tu correo debe ser único y servirá para iniciar sesión.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasena" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          id="contrasena" 
+          name="contrasena" 
+          class="form-input" 
+          placeholder="Mínimo 6 caracteres" 
+          minlength="6" 
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="confirmar_contrasena" class="form-label">Confirmar Contraseña</label>
+        <input 
+          type="password" 
+          id="confirmar_contrasena" 
+          name="confirmar_contrasena" 
+          class="form-input" 
+          placeholder="Repite tu contraseña" 
+          minlength="6" 
+          required
+        >
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary btn-block">
+          Registrarme en FinTrack
+        </button>
+      </div>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--color-slate-200); font-size: 0.9rem; color: var(--color-slate-600);">
+      ¿Ya tienes una cuenta registrada? 
+      <a href="{{ url_for('login') }}" style="font-weight: 600;">Inicia sesión aquí</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

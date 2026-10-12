@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FinTrack - Control de Gastos Personales{% endblock %}</title>
+  
+  <!-- Fuente Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Hoja de estilos principal en CSS3 puro -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Barra de navegación -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <a href="{{ url_for('dashboard') }}" class="brand-link">
+        <span class="brand-logo-icon">💰</span>
+        <span>FinTrack</span>
+      </a>
+
+      <nav class="nav-links">
+        {% if session.get('usuario_id') %}
+          <div class="user-badge">
+            <span class="user-avatar-circle">{{ session.get('usuario_nombre', 'U')[0]|upper }}</span>
+            <span>{{ session.get('usuario_nombre') }}</span>
+          </div>
+          <a href="{{ url_for('agregar_movimiento') }}" class="btn btn-primary btn-sm">+ Nuevo Movimiento</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" title="Cerrar sesión">Salir 🚪</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-secondary btn-sm">Iniciar Sesión</a>
+          <a href="{{ url_for('registro') }}" class="btn btn-primary btn-sm">Registrarse</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="main-wrapper">
+    <!-- Mensajes Flash informativos y de error -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">
+              <span>{{ message }}</span>
+              <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;font-weight:bold;color:inherit;">✕</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p><strong>FinTrack</strong> &copy; 2026 - Sistema de Control de Gastos Personales</p>
+      <p>Proyecto para Sistemas Transaccionales | MongoDB Atlas + Flask</p>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

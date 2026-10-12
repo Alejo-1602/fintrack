@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Movimiento - FinTrack{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 0 auto;">
+  <div style="margin-bottom: 1.5rem;">
+    <a href="{{ url_for('dashboard') }}" style="color: var(--color-slate-600); font-size: 0.9rem; font-weight: 500;">
+      ← Volver al Dashboard
+    </a>
+    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--color-dark); margin-top: 0.5rem;">
+      Editar Movimiento
+    </h1>
+    <p style="color: var(--color-slate-600); font-size: 0.95rem;">
+      Modifica los datos del registro seleccionado
+    </p>
+  </div>
+
+  <div class="form-card">
+    <form action="{{ url_for('editar_movimiento', id=movimiento._id|string) }}" method="POST" id="movimientoForm">
+      <!-- Selector de Tipo: Ingreso o Gasto -->
+      <label class="form-label">Tipo de Movimiento</label>
+      <div class="tipo-selector-group">
+        <label class="tipo-option">
+          <input 
+            type="radio" 
+            name="tipo" 
+            value="ingreso" 
+            id="radioIngreso" 
+            {% if movimiento.tipo == 'ingreso' %}checked{% endif %} 
+            onchange="actualizarCategorias()"
+          >
+          <span class="tipo-label-btn label-ingreso">
+            <span>📈</span> Ingreso
+          </span>
+        </label>
+
+        <label class="tipo-option">
+          <input 
+            type="radio" 
+            name="tipo" 
+            value="gasto" 
+            id="radioGasto" 
+            {% if movimiento.tipo == 'gasto' %}checked{% endif %} 
+            onchange="actualizarCategorias()"
+          >
+          <span class="tipo-label-btn label-gasto">
+            <span>📉</span> Gasto
+          </span>
+        </label>
+      </div>
+
+      <!-- Monto -->
+      <div class="form-group">
+        <label for="monto" class="form-label">Monto ($)</label>
+        <input 
+          type="number" 
+          step="0.01" 
+          min="0.01" 
+          id="monto" 
+          name="monto" 
+          class="form-input" 
+          value="{{ movimiento.monto }}" 
+          required 
+          autofocus
+        >
+        <div class="form-hint">Debe ser un valor positivo con hasta 2 decimales.</div>
+      </div>
+
+      <!-- Categoría (Dinámica por JS) -->
+      <div class="form-group">
+        <label for="categoria" class="form-label">Categoría</label>
+        <select id="categoria" name="categoria" class="form-select" required>
+          <!-- Se llena dinámicamente con JS -->
+        </select>
+      </div>
+
+      <!-- Fecha -->
+      <div class="form-group">
+        <label for="fecha" class="form-label">Fecha del Movimiento</label>
+        <input 
+          type="date" 
+          id="fecha" 
+          name="fecha" 
+          class="form-input" 
+          value="{{ movimiento.fecha }}" 
+          required
+        >
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label for="descripcion" class="form-label">Descripción</label>
+        <input 
+          type="text" 
+          id="descripcion" 
+          name="descripcion" 
+          class="form-input" 
+          value="{{ movimiento.descripcion }}" 
+          required
+        >
+      </div>
+
+      <!-- Botones de Acción -->
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary" style="flex: 2;">
+          💾 Actualizar Movimiento
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" style="flex: 1;">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const categoriasIngreso = [
+    { valor: 'salario', texto: '💼 Salario' },
+    { valor: 'beca', texto: '🎓 Beca' },
+    { valor: 'regalo', texto: '🎁 Regalo' },
+    { valor: 'otros', texto: '📦 Otros ingresos' }
+  ];
+
+  const categoriasGasto = [
+    { valor: 'comida', texto: '🍔 Comida' },
+    { valor: 'transporte', texto: '🚌 Transporte' },
+    { valor: 'estudio', texto: '📚 Estudio' },
+    { valor: 'ocio', texto: '🎬 Ocio' },
+    { valor: 'servicios', texto: '💡 Servicios' },
+    { valor: 'otros', texto: '📦 Otros gastos' }
+  ];
+
+  const categoriaActual = "{{ movimiento.categoria }}";
+
+  function actualizarCategorias(catPreseleccionada = null) {
+    const esIngreso = document.getElementById('radioIngreso').checked;
+    const select = document.getElementById('categoria');
+    const categorias = esIngreso ? categoriasIngreso : categoriasGasto;
+    const seleccion = catPreseleccionada || categoriaActual;
+
+    select.innerHTML = '';
+    categorias.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat.valor;
+      option.textContent = cat.texto;
+      if (cat.valor === seleccion) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+  }
+
+  // Inicializar con la categoría guardada
+  document.addEventListener('DOMContentLoaded', () => {
+    actualizarCategorias(categoriaActual);
+  });
+</script>
+{% endblock %}

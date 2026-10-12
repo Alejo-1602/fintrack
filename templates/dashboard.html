@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Principal - FinTrack{% endblock %}
+
+{% block content %}
+<div class="dashboard-header" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--color-dark); letter-spacing: -0.02em;">
+      Resumen Financiero
+    </h1>
+    <p style="color: var(--color-slate-600); font-size: 0.95rem;">
+      Bienvenido, <strong>{{ session.get('usuario_nombre') }}</strong>. Aquí está el estado de tus finanzas.
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="{{ url_for('exportar_datos') }}" class="btn btn-secondary btn-sm" title="Descargar respaldo en formato JSON">
+      📥 Respaldar (JSON)
+    </a>
+    <a href="{{ url_for('agregar_movimiento') }}" class="btn btn-primary">
+      ➕ Registrar Movimiento
+    </a>
+  </div>
+</div>
+
+<!-- ========================================================================
+     Tarjetas de Estadísticas Financieras
+     ======================================================================== -->
+<div class="stats-grid">
+  <!-- Saldo Actual Total -->
+  <div class="stat-card stat-card-balance">
+    <div class="stat-header">
+      <span class="stat-title">Saldo Actual Global</span>
+      <div class="stat-icon stat-icon-blue">🏦</div>
+    </div>
+    <div class="stat-value" style="color: {% if saldo_actual >= 0 %}#2563eb{% else %}var(--color-gasto){% endif %};">
+      ${{ "{:,.2f}".format(saldo_actual) }}
+    </div>
+    <div class="stat-subtitle">Ingresos históricos - Gastos históricos</div>
+  </div>
+
+  <!-- Ingresos del Mes -->
+  <div class="stat-card stat-card-ingreso">
+    <div class="stat-header">
+      <span class="stat-title">Ingresos ({% if mes_filtro %}{{ mes_filtro }}{% else %}Mes Seleccionado{% endif %})</span>
+      <div class="stat-icon stat-icon-green">📈</div>
+    </div>
+    <div class="stat-value value-ingreso">
+      +${{ "{:,.2f}".format(total_ingresos_mes) }}
+    </div>
+    <div class="stat-subtitle">{{ total_mov_ingresos }} registros en este período</div>
+  </div>
+
+  <!-- Gastos del Mes -->
+  <div class="stat-card stat-card-gasto">
+    <div class="stat-header">
+      <span class="stat-title">Gastos ({% if mes_filtro %}{{ mes_filtro }}{% else %}Mes Seleccionado{% endif %})</span>
+      <div class="stat-icon stat-icon-red">📉</div>
+    </div>
+    <div class="stat-value value-gasto">
+      -${{ "{:,.2f}".format(total_gastos_mes) }}
+    </div>
+    <div class="stat-subtitle">{{ total_mov_gastos }} registros en este período</div>
+  </div>
+
+  <!-- Balance del Mes -->
+  <div class="stat-card stat-card-mes">
+    <div class="stat-header">
+      <span class="stat-title">Balance Mensual</span>
+      <div class="stat-icon stat-icon-purple">⚖️</div>
+    </div>
+    <div class="stat-value" style="color: {% if balance_mes >= 0 %}var(--color-ingreso){% else %}var(--color-gasto){% endif %};">
+      {% if balance_mes >= 0 %}+{% endif %}${{ "{:,.2f}".format(balance_mes) }}
+    </div>
+    <div class="stat-subtitle">Neto del período analizado</div>
+  </div>
+</div>
+
+<!-- ========================================================================
+     Barra de Búsqueda y Filtros
+     ======================================================================== -->
+<div class="filter-card">
+  <form action="{{ url_for('dashboard') }}" method="GET" class="filter-form">
+    <!-- Búsqueda por texto (Descripción o Categoría) -->
+    <div>
+      <label for="q" class="form-label">Buscar Movimiento</label>
+      <input 
+        type="text" 
+        name="q" 
+        id="q" 
+        class="form-input" 
+        placeholder="Ej: almuerzo, salario, transporte..." 
+        value="{{ busqueda_query }}"
+      >
+    </div>
+
+    <!-- Filtro por Tipo -->
+    <div>
+      <label for="tipo" class="form-label">Tipo</label>
+      <select name="tipo" id="tipo" class="form-select">
+        <option value="" {% if not tipo_filtro %}selected{% endif %}>Todos los tipos</option>
+        <option value="ingreso" {% if tipo_filtro == 'ingreso' %}selected{% endif %}>Solo Ingresos</option>
+        <option value="gasto" {% if tipo_filtro == 'gasto' %}selected{% endif %}>Solo Gastos</option>
+      </select>
+    </div>
+
+    <!-- Filtro por Categoría -->
+    <div>
+      <label for="categoria" class="form-label">Categoría</label>
+      <select name="categoria" id="categoria" class="form-select">
+        <option value="" {% if not categoria_filtro %}selected{% endif %}>Todas</option>
+        <optgroup label="Ingresos">
+          <option value="salario" {% if categoria_filtro == 'salario' %}selected{% endif %}>Salario</option>
+          <option value="beca" {% if categoria_filtro == 'beca' %}selected{% endif %}>Beca</option>
+          <option value="regalo" {% if categoria_filtro == 'regalo' %}selected{% endif %}>Regalo</option>
+        </optgroup>
+        <optgroup label="Gastos">
+          <option value="comida" {% if categoria_filtro == 'comida' %}selected{% endif %}>Comida</option>
+          <option value="transporte" {% if categoria_filtro == 'transporte' %}selected{% endif %}>Transporte</option>
+          <option value="estudio" {% if categoria_filtro == 'estudio' %}selected{% endif %}>Estudio</option>
+          <option value="ocio" {% if categoria_filtro == 'ocio' %}selected{% endif %}>Ocio</option>
+          <option value="servicios" {% if categoria_filtro == 'servicios' %}selected{% endif %}>Servicios</option>
+        </optgroup>
+        <option value="otros" {% if categoria_filtro == 'otros' %}selected{% endif %}>Otros</option>
+      </select>
+    </div>
+
+    <!-- Filtro por Mes (YYYY-MM) -->
+    <div>
+      <label for="mes" class="form-label">Mes</label>
+      <input 
+        type="month" 
+        name="mes" 
+        id="mes" 
+        class="form-input" 
+        value="{{ mes_filtro }}"
+      >
+    </div>
+
+    <!-- Botones de Acción de Filtro -->
+    <div style="display: flex; gap: 0.5rem;">
+      <button type="submit" class="btn btn-primary" title="Aplicar filtros">
+        Filtrar 🔍
+      </button>
+      {% if busqueda_query or tipo_filtro or categoria_filtro or mes_filtro %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" title="Limpiar todos los filtros">
+          Restablecer
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- ========================================================================
+     Listado de Movimientos
+     ======================================================================== -->
+<div class="table-card">
+  <div class="table-header-bar">
+    <div class="table-title-group">
+      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--color-dark);">
+        Historial de Movimientos
+      </h2>
+      <span class="table-count-badge">
+        {{ movimientos|length }} registros encontrados
+      </span>
+    </div>
+
+    {% if busqueda_query or tipo_filtro or categoria_filtro or mes_filtro %}
+      <span style="font-size: 0.85rem; color: var(--color-slate-600);">
+        Filtros activos actualmente
+      </span>
+    {% endif %}
+  </div>
+
+  {% if movimientos and movimientos|length > 0 %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Categoría</th>
+            <th>Descripción</th>
+            <th style="text-align: right;">Monto</th>
+            <th style="text-align: center;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mov in movimientos %}
+            <tr>
+              <td style="white-space: nowrap; font-weight: 500;">
+                {{ mov.fecha }}
+              </td>
+              <td>
+                {% if mov.tipo == 'ingreso' %}
+                  <span class="badge badge-ingreso">↑ Ingreso</span>
+                {% else %}
+                  <span class="badge badge-gasto">↓ Gasto</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="badge badge-categoria">{{ mov.categoria }}</span>
+              </td>
+              <td>
+                <strong>{{ mov.descripcion }}</strong>
+              </td>
+              <td style="text-align: right;" class="monto-cell {% if mov.tipo == 'ingreso' %}monto-ingreso{% else %}monto-gasto{% endif %}">
+                {% if mov.tipo == 'ingreso' %}+{% else %}-{% endif %}${{ "{:,.2f}".format(mov.monto) }}
+              </td>
+              <td style="text-align: center;">
+                <div class="actions-cell" style="justify-content: center;">
+                  <a href="{{ url_for('editar_movimiento', id=mov._id|string) }}" class="btn btn-secondary btn-sm" title="Editar movimiento">
+                    ✏️ Editar
+                  </a>
+                  <form action="{{ url_for('eliminar_movimiento', id=mov._id|string) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este movimiento? Esta acción no se puede deshacer.');">
+                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar movimiento">
+                      🗑️ Borrar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <h3 class="empty-state-title">No hay movimientos registrados</h3>
+      <p class="empty-state-text">
+        {% if busqueda_query or tipo_filtro or categoria_filtro or mes_filtro %}
+          No se encontraron movimientos que coincidan con los filtros aplicados. Prueba restableciendo los criterios de búsqueda.
+        {% else %}
+          Aún no tienes movimientos registrados en tu cuenta. Comienza registrando tu primer ingreso o gasto.
+        {% endif %}
+      </p>
+      {% if busqueda_query or tipo_filtro or categoria_filtro or mes_filtro %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Limpiar Filtros</a>
+      {% else %}
+        <a href="{{ url_for('agregar_movimiento') }}" class="btn btn-primary">Registrar Primer Movimiento</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
